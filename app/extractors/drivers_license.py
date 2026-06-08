@@ -35,6 +35,20 @@ def extract_drivers_license(text):
         if upper == "EXP":
 
             if i + 1 < len(lines):
-                fields["expiration_date"] = lines[i + 1]
+                fields["expiration_date"] = (
+                    lines[i + 1]
+                    .replace(".", "")
+                    .strip()
+                )
+
+    for key in fields:
+
+        if isinstance(fields[key], str):
+
+            fields[key] = (
+                fields[key]
+                .replace(".", "")
+                .strip()
+            )
 
     return fields
