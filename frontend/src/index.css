@@ -1,0 +1,66 @@
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: Inter, system-ui, sans-serif;
+  background: #f8fafc;
+}
+
+.app {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.card {
+  width: 500px;
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow:
+    0 10px 30px rgba(0,0,0,.08);
+}
+
+h1 {
+  margin: 0;
+  font-size: 40px;
+}
+
+.subtitle {
+  color: #64748b;
+  margin-bottom: 30px;
+}
+
+.upload-btn {
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 16px;
+  cursor: pointer;
+
+  background: #2563eb;
+  color: white;
+}
+
+.upload-btn:hover {
+  background: #1d4ed8;
+}
+
+.supported {
+  margin-top: 30px;
+}
+
+.supported p {
+  font-weight: 600;
+}
+
+.supported ul {
+  padding-left: 20px;
+  color: #64748b;
+}
