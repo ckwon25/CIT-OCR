@@ -4,10 +4,10 @@ export default function App() {
 
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
+  const [history, setHistory] = useState([]);
+  const [dragging, setDragging] = useState(false);
 
-  async function uploadFile(event) {
-
-    const file = event.target.files[0];
+  async function processFile(file) {
 
     if (!file) return;
 
@@ -16,7 +16,6 @@ export default function App() {
     formData.append("file", file);
 
     setLoading(true);
-    setResult(null);
 
     try {
 
@@ -32,6 +31,11 @@ export default function App() {
 
       setResult(data);
 
+      setHistory(prev => [
+        data,
+        ...prev
+      ]);
+
     } catch (error) {
 
       console.error(error);
@@ -42,6 +46,24 @@ export default function App() {
 
       setLoading(false);
     }
+  }
+
+  async function uploadFile(event) {
+
+    const file = event.target.files[0];
+
+    processFile(file);
+  }
+
+  function handleDrop(event) {
+
+    event.preventDefault();
+
+    setDragging(false);
+
+    const file = event.dataTransfer.files[0];
+
+    processFile(file);
   }
 
   return (
@@ -57,15 +79,36 @@ export default function App() {
           Citizenship Document Scanner
         </p>
 
-        <label className="upload-btn">
+        <label
+          className={`drop-zone ${dragging ? "dragging" : ""}`}
 
-          Upload Document
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragging(true);
+          }}
 
-          <input
-            type="file"
-            onChange={uploadFile}
-            style={{ display: "none" }}
-          />
+          onDragLeave={() => {
+            setDragging(false);
+          }}
+
+          onDrop={handleDrop}
+        >
+
+          <label className="upload-btn">
+
+            Upload Document
+
+            <input
+              type="file"
+              onChange={uploadFile}
+              style={{ display: "none" }}
+            />
+
+          </label>
+
+          <p className="drop-text">
+            or drag and drop a document here
+          </p>
 
         </label>
 
@@ -97,55 +140,104 @@ export default function App() {
 
             </div>
 
-            {Object.entries(result.fields).map(
-              ([key, value]) => (
+            <div className="section-title">
+              Identity
+            </div>
 
-                <div
-                  key={key}
-                  className="field-row"
-                >
+            <div className="field-row">
 
-                  <div className="field-label">
+              <div className="field-label">
+                Name
+              </div>
 
-                    {key
-                      .replaceAll("_", " ")
-                      .replace(
-                        /\b\w/g,
-                        c => c.toUpperCase()
-                      )}
+              <div className="field-value">
 
-                  </div>
+                {result.fields.first_name || ""}
+                {" "}
+                {result.fields.last_name || ""}
 
-                  <div className="field-value">
+              </div>
 
-                    {value}
+            </div>
 
-                  </div>
+            {result.fields.date_of_birth && (
 
+              <div className="field-row">
+
+                <div className="field-label">
+                  Date of Birth
                 </div>
 
-              )
+                <div className="field-value">
+                  {result.fields.date_of_birth}
+                </div>
+
+              </div>
+
+            )}
+
+            {result.fields.document_number && (
+
+              <div className="field-row">
+
+                <div className="field-label">
+                  Document Number
+                </div>
+
+                <div className="field-value">
+                  {result.fields.document_number}
+                </div>
+
+              </div>
+
+            )}
+
+            {result.fields.expiration_date && (
+
+              <div className="field-row">
+
+                <div className="field-label">
+                  Expiration Date
+                </div>
+
+                <div className="field-value">
+                  {result.fields.expiration_date}
+                </div>
+
+              </div>
+
             )}
 
           </div>
 
         )}
 
-        {!result && (
+        {history.length > 0 && (
 
-          <div className="supported">
+          <div className="result-card">
 
-            <p>
-              Supported Documents
-            </p>
+            <div className="section-title">
+              Recent Scans
+            </div>
 
-            <ul>
-              <li>Driver License</li>
-              <li>Passport</li>
-              <li>Birth Certificate</li>
-              <li>Naturalization Certificate</li>
-              <li>Social Security Card</li>
-            </ul>
+            {history.map((scan, idx) => (
+
+              <div
+                key={idx}
+                className="field-row"
+              >
+
+                <div className="field-value">
+
+                  {scan.document_type
+  .replaceAll("_", " ")
+  .replace(/\b\w/g, c => c.toUpperCase())}
+
+                </div>
+
+              </div>
+
+            ))}
 
           </div>
 
